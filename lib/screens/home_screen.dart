@@ -5,12 +5,32 @@ import '../providers/auth_provider.dart';
 import '../providers/todo_provider.dart';
 import 'login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // TodoProvider 리스너 시작
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final todoProvider = Provider.of<TodoProvider>(context, listen: false);
+      
+      if (authProvider.user != null) {
+        todoProvider.startListener(authProvider.user!.uid);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final todoProvider = Provider.of<TodoProvider>(context);
     final user = authProvider.user;
 
     return Scaffold(
@@ -101,70 +121,157 @@ class HomeScreen extends StatelessWidget {
                         
                         const SizedBox(height: 32),
 
-                        // Empty State
+                        // Empty State / Todo 리스트
                         Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 120,
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFFF3F4F6),
-                                        Color(0xFFE5E7EB),
-                                      ],
+                          child: todoProvider.isLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF667EEA),
                                     ),
-                                    borderRadius: BorderRadius.circular(60),
                                   ),
-                                  child: const Icon(
-                                    Icons.inbox_rounded,
-                                    size: 56,
-                                    color: Color(0xFF9CA3AF),
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                const Text(
-                                  '아직 할일이 없습니다',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1A1A2E),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  '새로운 할일을 추가하여 시작해보세요!',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF6B7280),
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    // Part 10에서 구현
-                                  },
-                                  icon: const Icon(Icons.add_rounded),
-                                  label: const Text('첫 번째 할일 만들기'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF667EEA),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 14,
+                                )
+                              : todoProvider.todos.isEmpty
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: 120,
+                                            height: 120,
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFFF3F4F6),
+                                                  Color(0xFFE5E7EB),
+                                                ],
+                                              ),
+                                              borderRadius: BorderRadius.circular(60),
+                                            ),
+                                            child: const Icon(
+                                              Icons.inbox_rounded,
+                                              size: 56,
+                                              color: Color(0xFF9CA3AF),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                          const Text(
+                                            '아직 할일이 없습니다',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFF1A1A2E),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          const Text(
+                                            '새로운 할일을 추가하여 시작해보세요!',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xFF6B7280),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                          ElevatedButton.icon(
+                                            onPressed: () {
+                                              // Part 10에서 구현
+                                            },
+                                            icon: const Icon(Icons.add_rounded),
+                                            label: const Text('첫 번째 할일 만들기'),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(0xFF667EEA),
+                                              foregroundColor: Colors.white,
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 24,
+                                                vertical: 14,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(14),
+                                              ),
+                                              elevation: 4,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      itemCount: todoProvider.todos.length,
+                                      itemBuilder: (context, index) {
+                                        final todo = todoProvider.todos[index];
+                                        return Card(
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 0,
+                                            vertical: 6,
+                                          ),
+                                          elevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: ListTile(
+                                            leading: Checkbox(
+                                              value: todo.completed,
+                                              onChanged: (value) {
+                                                todoProvider.toggleComplete(todo.id);
+                                              },
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                            title: Text(
+                                              todo.title,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                decoration: todo.completed
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                              ),
+                                            ),
+                                            subtitle: todo.description.isNotEmpty
+                                                ? Text(
+                                                    todo.description,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  )
+                                                : null,
+                                            trailing: IconButton(
+                                              icon: const Icon(
+                                                Icons.delete_outline,
+                                                color: Colors.red,
+                                              ),
+                                              onPressed: () async {
+                                                final confirm = await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (context) => AlertDialog(
+                                                    title: const Text('할일 삭제'),
+                                                    content: const Text(
+                                                      '이 할일을 삭제하시겠습니까?',
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(context, false),
+                                                        child: const Text('취소'),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(context, true),
+                                                        child: const Text('삭제'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+
+                                                if (confirm == true) {
+                                                  await todoProvider.deleteTodo(todo.id);
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -196,7 +303,16 @@ class HomeScreen extends StatelessWidget {
           );
           
           if (confirm == true && context.mounted) {
+            // TodoProvider 리스너 정지
+            todoProvider.stopListener();
+            
             await authProvider.signOut();
+            // 로그아웃 후 LoginScreen으로 이동
+            if (context.mounted) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            }
           }
         },
         backgroundColor: const Color(0xFFFF6B6B),
