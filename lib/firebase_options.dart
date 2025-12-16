@@ -21,7 +21,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // Android 설정 (FlutterFire CLI로 생성 필요)
+  // Android 설정
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBTHfBMD-tin6B1f1FJKPcW6qUMGRnA_aY',
     appId: '1:137155354338:android:ab188c87418aac9f1988bb',
