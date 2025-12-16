@@ -57,9 +57,14 @@ class TodoProvider with ChangeNotifier {
     notifyListeners();
   }
   
-  // Todo 추가 (Part 9에서 구현)
+  // Todo 추가
   Future<void> addTodo(Todo todo) async {
-    // 구현 예정
+    try {
+      await _firestore.collection('todos').add(todo.toMap());
+    } catch (e) {
+      print('Todo 추가 에러: $e');
+      rethrow;
+    }
   }
 
   // Todo 수정 (Part 9에서 구현)
