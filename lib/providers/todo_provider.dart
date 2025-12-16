@@ -48,6 +48,14 @@ class TodoProvider with ChangeNotifier {
       notifyListeners();
     });
   }
+
+  // 리스너 정지
+  void stopListener() {
+    _todosSubscription?.cancel();
+    _todosSubscription = null;
+    _todos = [];
+    notifyListeners();
+  }
   
   // Todo 추가 (Part 9에서 구현)
   Future<void> addTodo(Todo todo) async {
