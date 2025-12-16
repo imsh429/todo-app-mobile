@@ -67,9 +67,14 @@ class TodoProvider with ChangeNotifier {
     }
   }
 
-  // Todo 수정 (Part 9에서 구현)
+  // Todo 수정
   Future<void> updateTodo(String todoId, Map<String, dynamic> updates) async {
-    // 구현 예정
+    try {
+      await _firestore.collection('todos').doc(todoId).update(updates);
+    } catch (e) {
+      print('Todo 수정 에러: $e');
+      rethrow;
+    }
   }
 
   // Todo 삭제 (Part 9에서 구현)
