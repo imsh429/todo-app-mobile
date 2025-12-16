@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "137155354338-d289sfi9n27rfv0t64hvj7mqtk08apvs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tasksync_mobile",
+            "certificate_hash": "109b776869d6c2974a3cd872e9523d52f6474e93"
+          }
+        },
+        {
           "client_id": "137155354338-t8jkdfsqlmcfls1b1l95hul5g85oja71.apps.googleusercontent.com",
           "client_type": 3
         }
