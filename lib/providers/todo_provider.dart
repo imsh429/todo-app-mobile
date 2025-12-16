@@ -103,4 +103,24 @@ class TodoProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  // 완료된 Todo 모두 삭제
+  Future<void> clearCompleted(String userId) async {
+    try {
+      final completedTodos = _todos.where((todo) => todo.completed).toList();
+      
+      // Batch로 한번에 삭제
+      final batch = _firestore.batch();
+      
+      for (var todo in completedTodos) {
+        batch.delete(_firestore.collection('todos').doc(todo.id));
+      }
+      
+      await batch.commit();
+    } catch (e) {
+      print('완료된 Todo 삭제 에러: $e');
+      rethrow;
+    }
+  }
+  
 }
