@@ -122,5 +122,11 @@ class TodoProvider with ChangeNotifier {
       rethrow;
     }
   }
-  
+
+  @override
+  void dispose() {
+    stopListener();
+    super.dispose();
+  }
+
 }
