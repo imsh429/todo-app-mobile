@@ -88,8 +88,19 @@ class TodoProvider with ChangeNotifier {
   }
 
 
-  // Todo 완료 토글 (Part 9에서 구현)
-  Future<void> toggleComplete(String todoId, bool completed) async {
-    // 구현 예정
+  // Todo 완료 토글
+  Future<void> toggleComplete(String todoId) async {
+    try {
+      // 현재 Todo 찾기
+      final todo = _todos.firstWhere((t) => t.id == todoId);
+      
+      // completed 값 반전
+      await _firestore.collection('todos').doc(todoId).update({
+        'completed': !todo.completed,
+      });
+    } catch (e) {
+      print('Todo 완료 토글 에러: $e');
+      rethrow;
+    }
   }
 }
