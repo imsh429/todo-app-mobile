@@ -2,16 +2,23 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/todo.dart';
+import 'dart:async';
+
 
 class TodoProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   List<Todo> _todos = [];
   bool _isLoading = false;
+  StreamSubscription<QuerySnapshot>? _todosSubscription;
+
 
   List<Todo> get todos => _todos;
   bool get isLoading => _isLoading;
 
+  // 완료되지 않은 todo 개수
+  int get activeTodoCount => _todos.where((todo) => !todo.completed).length;
+  
   // Firestore 실시간 리스너 (Part 9에서 구현)
   void subscribeTodos(String userId) {
     _firestore
