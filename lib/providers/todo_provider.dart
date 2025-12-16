@@ -26,9 +26,12 @@ class TodoProvider with ChangeNotifier {
   List<Todo> get activeTodos => _todos.where((todo) => !todo.completed).toList();
   List<Todo> get completedTodos => _todos.where((todo) => todo.completed).toList();
 
-  // Firestore 실시간 리스너 (Part 9에서 구현)
-  void subscribeTodos(String userId) {
-    _firestore
+  // Firestore 실시간 리스너 시작
+  void startListener(String userId) {
+    _isLoading = true;
+    notifyListeners();
+
+    _todosSubscription = _firestore
         .collection('todos')
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
@@ -37,10 +40,15 @@ class TodoProvider with ChangeNotifier {
       _todos = snapshot.docs
           .map((doc) => Todo.fromFirestore(doc))
           .toList();
+      _isLoading = false;
+      notifyListeners();
+    }, onError: (error) {
+      print('Todo 리스너 에러: $error');
+      _isLoading = false;
       notifyListeners();
     });
   }
-
+  
   // Todo 추가 (Part 9에서 구현)
   Future<void> addTodo(Todo todo) async {
     // 구현 예정
