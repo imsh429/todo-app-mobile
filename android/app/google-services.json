@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "137155354338",
+    "project_id": "todoapp-7afa3",
+    "storage_bucket": "todoapp-7afa3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137155354338:android:ab188c87418aac9f1988bb",
+        "android_client_info": {
+          "package_name": "com.example.tasksync_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "137155354338-t8jkdfsqlmcfls1b1l95hul5g85oja71.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTHfBMD-tin6B1f1FJKPcW6qUMGRnA_aY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "137155354338-t8jkdfsqlmcfls1b1l95hul5g85oja71.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
