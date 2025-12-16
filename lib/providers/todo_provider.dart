@@ -77,10 +77,16 @@ class TodoProvider with ChangeNotifier {
     }
   }
 
-  // Todo 삭제 (Part 9에서 구현)
+  // Todo 삭제
   Future<void> deleteTodo(String todoId) async {
-    // 구현 예정
+    try {
+      await _firestore.collection('todos').doc(todoId).delete();
+    } catch (e) {
+      print('Todo 삭제 에러: $e');
+      rethrow;
+    }
   }
+
 
   // Todo 완료 토글 (Part 9에서 구현)
   Future<void> toggleComplete(String todoId, bool completed) async {
