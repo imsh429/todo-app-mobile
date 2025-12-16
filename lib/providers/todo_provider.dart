@@ -22,6 +22,10 @@ class TodoProvider with ChangeNotifier {
   // 완료된 Todo 개수
   int get completedTodoCount => _todos.where((todo) => todo.completed).length;
 
+  // 필터링된 Todo 목록
+  List<Todo> get activeTodos => _todos.where((todo) => !todo.completed).toList();
+  List<Todo> get completedTodos => _todos.where((todo) => todo.completed).toList();
+
   // Firestore 실시간 리스너 (Part 9에서 구현)
   void subscribeTodos(String userId) {
     _firestore
