@@ -204,77 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       itemCount: todoProvider.todos.length,
                                       itemBuilder: (context, index) {
                                         final todo = todoProvider.todos[index];
-                                        return Card(
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 0,
-                                            vertical: 6,
-                                          ),
-                                          elevation: 2,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: ListTile(
-                                            leading: Checkbox(
-                                              value: todo.completed,
-                                              onChanged: (value) {
-                                                todoProvider.toggleComplete(todo.id);
-                                              },
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                            ),
-                                            title: Text(
-                                              todo.title,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                decoration: todo.completed
-                                                    ? TextDecoration.lineThrough
-                                                    : null,
-                                              ),
-                                            ),
-                                            subtitle: todo.description.isNotEmpty
-                                                ? Text(
-                                                    todo.description,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                  )
-                                                : null,
-                                            trailing: IconButton(
-                                              icon: const Icon(
-                                                Icons.delete_outline,
-                                                color: Colors.red,
-                                              ),
-                                              onPressed: () async {
-                                                final confirm = await showDialog<bool>(
-                                                  context: context,
-                                                  builder: (context) => AlertDialog(
-                                                    title: const Text('할일 삭제'),
-                                                    content: const Text(
-                                                      '이 할일을 삭제하시겠습니까?',
-                                                    ),
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(context, false),
-                                                        child: const Text('취소'),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.pop(context, true),
-                                                        child: const Text('삭제'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-
-                                                if (confirm == true) {
-                                                  await todoProvider.deleteTodo(todo.id);
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        );
+                                        return TodoItem(todo: todo);
                                       },
                                     ),
                         ),
@@ -287,41 +217,61 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('로그아웃'),
-              content: const Text('로그아웃 하시겠습니까?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('취소'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('로그아웃'),
-                ),
-              ],
-            ),
-          );
-          
-          if (confirm == true && context.mounted) {
-            // TodoProvider 리스너 정지
-            todoProvider.stopListener();
-            
-            await authProvider.signOut();
-            // 로그아웃 후 LoginScreen으로 이동
-            if (context.mounted) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // 추가 버튼
+          FloatingActionButton(
+            heroTag: 'add',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => const AddTodoDialog(),
               );
-            }
-          }
-        },
-        backgroundColor: const Color(0xFFFF6B6B),
-        child: const Icon(Icons.logout_rounded),
+            },
+            backgroundColor: const Color(0xFF667EEA),
+            child: const Icon(Icons.add_rounded),
+          ),
+          const SizedBox(height: 16),
+          // 로그아웃 버튼
+          FloatingActionButton(
+            heroTag: 'logout',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('로그아웃'),
+                  content: const Text('로그아웃 하시겠습니까?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('취소'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('로그아웃'),
+                    ),
+                  ],
+                ),
+              );
+              
+              if (confirm == true && context.mounted) {
+                // TodoProvider 리스너 정지
+                todoProvider.stopListener();
+                
+                await authProvider.signOut();
+                // 로그아웃 후 LoginScreen으로 이동
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  );
+                }
+              }
+            },
+            backgroundColor: const Color(0xFFFF6B6B),
+            child: const Icon(Icons.logout_rounded),
+          ),
+        ],
       ),
     );
   }
