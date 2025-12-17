@@ -176,7 +176,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           const SizedBox(height: 24),
                                           ElevatedButton.icon(
                                             onPressed: () {
-                                              // Part 10에서 구현
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => const AddTodoDialog(),
+                                              );
                                             },
                                             icon: const Icon(Icons.add_rounded),
                                             label: const Text('첫 번째 할일 만들기'),
